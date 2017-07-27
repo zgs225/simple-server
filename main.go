@@ -24,9 +24,6 @@ func main() {
 		log.Fatal(err)
 	}
 	d := http.Dir(a)
-	if err != nil {
-		log.Fatal(err)
-	}
 	fs := http.FileServer(d)
 	ls := &logServer{Next: fs, Logger: log.New(os.Stderr, "", log.LstdFlags)}
 	log.Printf("Simple server on :%d...\n", *port)
