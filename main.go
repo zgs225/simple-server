@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 )
 
@@ -26,7 +27,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	h := http.FileServer(d)
+	fs := http.FileServer(d)
+	ls := &logServer{Next: fs, Logger: log.New(os.Stderr, "", log.LstdFlags)}
 	log.Printf("Simple server on :%d...\n", *port)
-	log.Println(http.ListenAndServe(fmt.Sprintf(":%d", *port), h))
+	log.Println(http.ListenAndServe(fmt.Sprintf(":%d", *port), ls))
 }
