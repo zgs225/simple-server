@@ -6,7 +6,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
+	"time"
 )
 
 var (
@@ -27,5 +30,30 @@ func main() {
 	fs := http.FileServer(d)
 	ls := &logServer{Next: fs, Logger: log.New(os.Stderr, "", log.LstdFlags)}
 	log.Printf("Simple server on :%d...\n", *port)
-	log.Println(http.ListenAndServe(fmt.Sprintf(":%d", *port), ls))
+	go func() {
+		log.Println(http.ListenAndServe(fmt.Sprintf(":%d", *port), ls))
+	}()
+	time.Sleep(time.Second)
+	url := fmt.Sprintf("http://localhost:%d", *port)
+	openBrowser(url)
+	// Keep your server running or perform other tasks
+	select {}
+}
+func openBrowser(url string) {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "start", url)
+	case "darwin":
+		cmd = exec.Command("open", url)
+	case "linux":
+		cmd = exec.Command("xdg-open", url)
+	default:
+		fmt.Println("Unsupported operating system:", runtime.GOOS)
+		return
+	}
+	err := cmd.Start()
+	if err != nil {
+		fmt.Println("Failed to open browser:", err)
+	}
 }
