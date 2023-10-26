@@ -49,11 +49,11 @@ func openBrowser(url string) {
 	case "linux":
 		cmd = exec.Command("xdg-open", url)
 	default:
-		fmt.Println("Unsupported operating system:", runtime.GOOS)
+		log.Println("Unsupported operating system:", runtime.GOOS)
 		return
 	}
 	err := cmd.Start()
 	if err != nil {
-		fmt.Println("Failed to open browser:", err)
+		log.Println("Failed to open browser:", err)
 	}
 }
